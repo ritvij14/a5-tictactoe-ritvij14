@@ -7,27 +7,117 @@
     android:layout_height="match_parent"
     tools:context=".DashboardFragment">
 
-  <TextView
+  <LinearLayout
       android:id="@+id/txt_score"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/placeholder"
-      android:textAppearance="@style/TextAppearance.AppCompat.Large"
-      app:layout_constraintBottom_toTopOf="@+id/list"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
-  <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/list"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:layoutManager="LinearLayoutManager"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toTopOf="@+id/list_ll"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:baselineAligned="false">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+      <TextView
+          android:id="@+id/won_score"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="32sp"
+          android:text="@string/_0"
+          android:textAlignment="center"
+          android:textColor="@color/black"/>
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/won"
+          android:textAlignment="center"
+          android:textColor="#2E7D32"
+          android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+      <TextView
+          android:id="@+id/draw_score"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="32sp"
+          android:text="@string/_0"
+          android:textAlignment="center"
+          android:textColor="@color/black"/>
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/draws"
+          android:textAlignment="center"
+          android:textColor="@color/black"
+          android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+      <TextView
+          android:id="@+id/lost_score"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="32sp"
+          android:text="@string/_0"
+          android:textAlignment="center"
+          android:textColor="@color/black"/>
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/lost"
+          android:textAlignment="center"
+          android:textColor="#DD2C00"
+          android:textSize="12sp" />
+    </LinearLayout>
+
+  </LinearLayout>
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/list_ll"
+      android:orientation="vertical"
       app:layout_constraintBottom_toBottomOf="parent"
-      tools:layout_editor_absoluteX="16dp"
-      tools:listitem="@layout/fragment_item" />
-
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/open_games"
+        android:id="@+id/open_display"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_margin="20dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/fragment_item" />
+  </LinearLayout>
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_new_game"
