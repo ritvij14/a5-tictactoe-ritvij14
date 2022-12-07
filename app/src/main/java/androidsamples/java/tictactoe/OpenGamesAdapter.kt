@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 
 class OpenGamesAdapter(
-    private val list: ArrayList<GameModel>,
-    private val navController: NavController
+    private val list: ArrayList<GameModel>
 ) :
     RecyclerView.Adapter<OpenGamesAdapter.ViewHolder>() {
 
@@ -23,7 +21,7 @@ class OpenGamesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.populate(list[position].gameId, position + 1, navController)
+        holder.populate(list[position].gameId, position + 1)
     }
 
     override fun getItemCount(): Int {
@@ -41,7 +39,7 @@ class OpenGamesAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        fun populate(game: String, i: Int, nav: NavController) {
+        fun populate(game: String, i: Int) {
             mContentView.text = game
             mIdView.text = "#$i"
             mView.setOnClickListener {

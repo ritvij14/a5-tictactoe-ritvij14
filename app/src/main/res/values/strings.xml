@@ -6,7 +6,7 @@
     <string name="game_fragment_label">Tic Tac Toe: Game</string>
     <string name="dashboard_fragment_label">Tic Tac Toe: Dashboard</string>
 
-    <string name="login">Register or Log In</string>
+    <string name="login">Log In</string>
     <string name="logout">Log Out</string>
 
     <string name="new_game">New Game</string>
@@ -33,10 +33,13 @@
     <string name="your_turn">Your turn</string>
     <string name="waiting">Waiting</string>
     <string name="you_win">You Win!</string>
-    <string name="you_lose">You lose...</string>
+    <string name="you_lose">You lose…</string>
     <string name="error">Error!</string>
     <string name="draw">Match draw</string>
     <string name="draws">Draws</string>
     <string name="copy">Copy Game ID</string>
     <string name="game_id">Game ID:</string>
+    <string name="register">Register</string>
+    <string name="host">Host:</string>
+    <string name="challenger">Challenger:</string>
 </resources>

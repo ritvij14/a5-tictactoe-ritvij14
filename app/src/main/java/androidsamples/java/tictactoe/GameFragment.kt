@@ -111,11 +111,30 @@ class GameFragment : Fragment() {
                         value?.get("gameState") as List<String>,
                         value["open"] as Boolean,
                         value["currentHost"] as String,
+                        value["challenger"] as String,
                         (value["turn"] as Long).toInt(),
                         value["gameId"] as String
                     )
                     Log.d(TAG, "onViewCreated: ${game.gameState}")
                     gameState = game.gameState.toTypedArray()
+                    var hostMail: String
+                    var challengerMail = ""
+
+                    view.findViewById<TextView>(R.id.display_game_id).text =
+                        "Game ID: ${game.gameId}"
+                    userReference.document(value["currentHost"] as String).get()
+                        .addOnSuccessListener {
+                            hostMail = it["email"] as String
+                            view.findViewById<TextView>(R.id.display_host).text = "Host: $hostMail"
+                        }
+                    if (value["challenger"] != "" && value["challenger"] != null) {
+                        userReference.document(value["challenger"] as String).get()
+                            .addOnSuccessListener {
+                                challengerMail = it["email"] as String
+                                view.findViewById<TextView>(R.id.display_challenger).text =
+                                    "Challenger: $challengerMail"
+                            }
+                    }
 
                     if (game.turn == 1) {
                         if (game.currentHost == FirebaseAuth.getInstance().currentUser!!.uid) {
@@ -128,18 +147,22 @@ class GameFragment : Fragment() {
                             myTurn = false
                             myChar = "O"
                             otherChar = "X"
+                            gameReference.document(game.gameId)
+                                .update("challenger", FirebaseAuth.getInstance().currentUser!!.uid)
                         }
                     } else {
                         if (game.currentHost != FirebaseAuth.getInstance().currentUser!!.uid) {
                             myTurn = true
-                            myChar = "X"
-                            otherChar = "O"
+                            myChar = "O"
+                            otherChar = "X"
                             isHost = false
+                            gameReference.document(game.gameId)
+                                .update("challenger", FirebaseAuth.getInstance().currentUser!!.uid)
                         } else {
                             isHost = true
                             myTurn = false
-                            myChar = "O"
-                            otherChar = "X"
+                            myChar = "X"
+                            otherChar = "O"
                         }
                     }
                     if (!isSinglePlayer) {
@@ -236,11 +259,12 @@ class GameFragment : Fragment() {
                     userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
                         .get().addOnSuccessListener { doc ->
                             userData = doc
+                            var lost = userData?.get("lost") as Int
+                            lost += 1
+                            userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
+                                .update("lost", lost)
                         }
-                    var lost = userData?.get("lost") as Int
-                    lost += 1
-                    userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
-                        .update("lost", lost)
+
                 }
             }
             0 -> display.setText(R.string.draw)
@@ -264,6 +288,7 @@ class GameFragment : Fragment() {
                 value?.get("gameState") as List<String>,
                 value["open"] as Boolean,
                 value["currentHost"] as String,
+                value["challenger"] as String,
                 (value["turn"] as Long).toInt(),
                 value["gameId"] as String,
             )
@@ -294,7 +319,7 @@ class GameFragment : Fragment() {
 
     private fun updateDB() {
         gameReference.document(game.gameId).update("gameState", gameState.toList())
-        gameReference.document(game.gameId).update("isOpen", !gameEnded)
+        gameReference.document(game.gameId).update("open", !gameEnded)
 
         if (game.turn == 1) {
             game.turn = 2

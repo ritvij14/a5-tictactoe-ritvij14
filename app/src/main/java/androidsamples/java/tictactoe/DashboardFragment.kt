@@ -77,6 +77,7 @@ class DashboardFragment
                             shot.data!!["gameState"] as List<String>,
                             shot.data!!["open"] as Boolean,
                             shot.data!!["currentHost"] as String,
+                            shot.data!!["challenger"] as String,
                             (shot.data!!["turn"] as Long).toInt(),
                             shot.data!!["gameId"] as String
                         )
@@ -88,7 +89,7 @@ class DashboardFragment
             }
 
             recyclerView.adapter =
-                OpenGamesAdapter(gameList as ArrayList<GameModel>, mNavController)
+                OpenGamesAdapter(gameList as ArrayList<GameModel>)
             recyclerView.layoutManager = LinearLayoutManager(context)
             info.text = if (gameList.isEmpty()) "No Open Games Available :(" else "Open Games"
         }
@@ -110,7 +111,8 @@ class DashboardFragment
                     gameReference.add(
                         GameModel(
                             currentHost = auth.currentUser!!.uid,
-                            gameId = gameId
+                            gameId = gameId,
+                            challenger = ""
                         )
                     ).addOnSuccessListener { documentReference ->
                         gameId = documentReference.id

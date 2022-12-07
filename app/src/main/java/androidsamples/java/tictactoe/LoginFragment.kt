@@ -51,6 +51,12 @@ class LoginFragment : Fragment() {
         pd.setTitle("Authentication")
 
         view.findViewById<View>(R.id.btn_log_in).setOnClickListener {
+            login(
+                email.text.toString(), password.text.toString()
+            )
+        }
+
+        view.findViewById<View>(R.id.btn_register).setOnClickListener {
             pd.show()
             if (email.text.toString().isEmpty() || password.text.toString().isEmpty()) {
                 Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT)
@@ -77,7 +83,14 @@ class LoginFragment : Fragment() {
                             .navigate(R.id.action_login_successful)
                         try {
                             userReference.document(task.result.user!!.uid)
-                                .set(mapOf("won" to 0, "draw" to 0, "lost" to 0))
+                                .set(
+                                    mapOf(
+                                        "email" to email.text.toString(),
+                                        "won" to 0,
+                                        "draw" to 0,
+                                        "lost" to 0
+                                    )
+                                )
                                 .addOnSuccessListener {
                                     Log.d("TICTACTOEAUTH", "SUCESS")
                                 }
