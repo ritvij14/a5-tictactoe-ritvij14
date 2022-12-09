@@ -63,18 +63,12 @@ class GameFragment : Fragment() {
                         .setTitle(R.string.confirm)
                         .setMessage(R.string.forfeit_game_dialog_message)
                         .setPositiveButton(R.string.yes) { _, _ ->
-                            if (!isSinglePlayer) {
-                                var userData: DocumentSnapshot? = null
-                                userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
-                                    .get().addOnSuccessListener { doc ->
-                                        userData = doc
-                                    }
-                                var lost = userData?.get("lost") as Int
-                                lost += 1
-                                userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
-                                    .update("lost", lost)
-                            }
+                            endGame(-1)
                             mNavController!!.popBackStack()
+                            gameReference.document(game.gameId)
+                                .update("forfeited", FirebaseAuth.getInstance().currentUser!!.uid)
+                            gameReference.document(game.gameId)
+                                .update("open", false)
                         }
                         .setNegativeButton(
                             R.string.cancel
@@ -115,7 +109,18 @@ class GameFragment : Fragment() {
                         (value["turn"] as Long).toInt(),
                         value["gameId"] as String
                     )
-                    Log.d(TAG, "onViewCreated: ${game.gameState}")
+                    Log.d(TAG, "onViewCreated: ${value.data?.contains("forfeited")}")
+                    if (value["forfeited"] == value["challenger"] && FirebaseAuth.getInstance().currentUser!!.uid != value["forfeited"]) {
+                        endGame(1)
+                        mNavController?.popBackStack()
+                        Toast.makeText(
+                            context,
+                            "Other player forfeited, you win",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    Log.d(TAG, "Game ID: ${game.gameId}")
+                    Log.d(TAG, "Game State: ${game.gameState}")
                     gameState = game.gameState.toTypedArray()
                     var hostMail: String
                     var challengerMail = ""
@@ -141,12 +146,14 @@ class GameFragment : Fragment() {
                             isHost = true
                             myTurn = true
                             myChar = "X"
+                            display.setText(R.string.your_turn)
                             otherChar = "O"
                         } else {
                             isHost = false
                             myTurn = false
                             myChar = "O"
                             otherChar = "X"
+                            display.setText(R.string.their_turn)
                             gameReference.document(game.gameId)
                                 .update("challenger", FirebaseAuth.getInstance().currentUser!!.uid)
                         }
@@ -156,6 +163,7 @@ class GameFragment : Fragment() {
                             myChar = "O"
                             otherChar = "X"
                             isHost = false
+                            display.setText(R.string.your_turn)
                             gameReference.document(game.gameId)
                                 .update("challenger", FirebaseAuth.getInstance().currentUser!!.uid)
                         } else {
@@ -163,22 +171,10 @@ class GameFragment : Fragment() {
                             myTurn = false
                             myChar = "X"
                             otherChar = "O"
+                            display.setText(R.string.their_turn)
                         }
                     }
-                    if (!isSinglePlayer) {
-                        var check = false
-                        for (s in gameState) {
-                            if (s.isNotEmpty()) {
-                                check = true
-                                break
-                            }
-                        }
-                        if (!check) {
-                            waitForOtherPlayer()
-                        }
-                    } else {
-                        display.setText(R.string.your_turn)
-                    }
+                    updateUI()
                 }
         }
 
@@ -255,11 +251,11 @@ class GameFragment : Fragment() {
             -1 -> {
                 display.setText(R.string.you_lose)
                 if (!gameEnded) {
-                    var userData: DocumentSnapshot? = null
+                    var userData: DocumentSnapshot
                     userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
                         .get().addOnSuccessListener { doc ->
                             userData = doc
-                            var lost = userData?.get("lost") as Int
+                            var lost = (userData.get("lost") as Long).toInt()
                             lost += 1
                             userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
                                 .update("lost", lost)
@@ -267,7 +263,21 @@ class GameFragment : Fragment() {
 
                 }
             }
-            0 -> display.setText(R.string.draw)
+            0 -> {
+                display.setText(R.string.draw)
+                if (!gameEnded) {
+                    var userData: DocumentSnapshot
+                    userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
+                        .get().addOnSuccessListener { doc ->
+                            userData = doc
+                            var draw = (userData.get("draw") as Long).toInt()
+                            draw += 1
+                            userReference.document(FirebaseAuth.getInstance().currentUser!!.uid)
+                                .update("draw", draw)
+                        }
+
+                }
+            }
             else -> {
                 display.setText(R.string.error)
                 Log.i("CHECKING DRAW", "Error: $win")
@@ -277,11 +287,10 @@ class GameFragment : Fragment() {
             mButtons[i]!!.isClickable = false
         }
         gameEnded = true
-        if (!isSinglePlayer) updateDB()
+        gameReference.document(game.gameId).update("open", !gameEnded)
     }
 
     private fun waitForOtherPlayer() {
-        display.setText(R.string.waiting)
         @Suppress("UNCHECKED_CAST")
         gameReference.document(game.gameId).addSnapshotListener { value, _ ->
             val l = GameModel(
@@ -296,7 +305,6 @@ class GameFragment : Fragment() {
             gameState = game.gameState.toTypedArray()
             updateUI()
             myTurn = updateTurn(game.turn)
-            display.setText(R.string.your_turn)
             val win = checkWin()
             if (win == 1 || win == -1) endGame(win) else if (checkDraw()) endGame(0)
         }
@@ -358,12 +366,5 @@ class GameFragment : Fragment() {
             ) gameState[0] else if (gameState[6] == gameState[4] && gameState[4] == gameState[2] && gameState[2].isNotEmpty()
             ) gameState[2] else return 0
         return if (winChar == myChar) 1 else -1
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_logout, menu)
-        // this action menu is handled in MainActivity
     }
 }

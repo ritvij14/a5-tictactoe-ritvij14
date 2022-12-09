@@ -31,15 +31,16 @@ It uses Android Navigation Component, with a single activity and three fragments
 
 ### b. What does the app do? Any known bugs?
 
-This app simulates a Tic Tac Toe game between two player or a single player on a device. The games and their data are recorded in Firebase.
-Right now any player cqan enter a game to play against you
+This app simulates a Tic Tac Toe game between two player or a single player on a device. The games
+and their data are recorded in Firebase. Right now any player cqan enter a game to play against you
 
 ### c. Description of completed tasks and steps followed to achieve them
 
 **Task 1 - Implementing Sign-in Screen**
 
 - Initialising Firebase object, and pushing user data to add user.
-- User can log in with any email and password, and can then view active games currently present in the database.
+- User can log in with any email and password, and can then view active games currently present in
+  the database.
 
 **Task 2 - Implementing Single-Player Mode**
 
@@ -51,28 +52,11 @@ Right now any player cqan enter a game to play against you
 - After user logs in, and chooses a two player game, a new game entry is created in the database.
 - Two users can play together where the tic tac toe grid is tracked through an array.
 
-**Task 4 - Accessibility**
-
-- I ran the application using **TalkBack** service. The service is fairly easy to use and guides the user on each and every step. Elements on the screen were read aloud. I could easily understand where my finger was on the screen and which element was active. Overall, TalkBack is a great accessibility tool which can help blind people or people with vision impairments to use apps.
-- I ran **Accessibility Scanner** on the application, which reported the following issue:
-
-    1. **Text contrast**: Inappropriate text contrast ratio.
-
-    - This issue was fixed by adding and setting the `android:textColor` property.
-
-    2. **Insufficient image color contrast ratio**: Low contrast ratio for the add entry floating action button.
-
-    3. **No speakable text present**: Several item may not have a label readable by screen readers.
-
 ### d. Testing using written test cases and monkey stress-testing
 
-- I followed a test-driven approach for this assignment, writing and running test cases as I worked on the edge cases for the code.
-- I wrote instrumented / UI tests and ran all tests after each step I completed in the assignment, while adding new test cases.
-- For monkey stress testing, I ran the monkey tool successfully for 10000 iterations using the command `adb shell monkey -p androidsamples.java.tictactoe -v 10000`.
-
-Running tests on my app after each step helped me get a more detailed idea as to how the app was functioning, and also helped me figure out some corner cases which I corrected to avoid app crashes.
-
-I ran the monkey tool successfully for 2500, 5000, and 10000 iterations. The app did not crash on any run.
+- During monkey testing, app crashed only due to denial of the
+  permission `android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS`. This is a protected service for
+  system apps so I am unsure of how to implement it.
 
 ### e. Approximate number of hours it took to complete the assignment
 

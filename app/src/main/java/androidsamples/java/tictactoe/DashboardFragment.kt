@@ -32,6 +32,7 @@ class DashboardFragment
     private lateinit var recyclerView: RecyclerView
     private lateinit var won: TextView
     private lateinit var lost: TextView
+    private lateinit var draw: TextView
     private lateinit var info: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +58,7 @@ class DashboardFragment
         recyclerView = view.findViewById(R.id.list)
         won = view.findViewById(R.id.won_score)
         lost = view.findViewById(R.id.lost_score)
+        draw = view.findViewById(R.id.draw_score)
         info = view.findViewById(R.id.open_display)
 
         auth = FirebaseAuth.getInstance()
@@ -73,17 +75,20 @@ class DashboardFragment
                 for (shot in value.documents) {
                     if (shot.data != null) {
                         Log.d(TAG, "onViewCreated: ${shot.data}")
-                        val game = GameModel(
-                            shot.data!!["gameState"] as List<String>,
-                            shot.data!!["open"] as Boolean,
-                            shot.data!!["currentHost"] as String,
-                            shot.data!!["challenger"] as String,
-                            (shot.data!!["turn"] as Long).toInt(),
-                            shot.data!!["gameId"] as String
-                        )
-                        if (game.isOpen)
-                            gameList.add(game)
-                        Log.d(TAG, "onViewCreated: $game")
+                        if ((shot.data!!["challenger"] as String).isEmpty() || (shot.data!!["challenger"] as String) == auth.currentUser!!.uid || (shot.data!!["currentHost"] as String) == auth.currentUser!!.uid
+                        ) {
+                            val game = GameModel(
+                                shot.data!!["gameState"] as List<String>,
+                                shot.data!!["open"] as Boolean,
+                                shot.data!!["currentHost"] as String,
+                                shot.data!!["challenger"] as String,
+                                (shot.data!!["turn"] as Long).toInt(),
+                                shot.data!!["gameId"] as String
+                            )
+                            if (game.isOpen)
+                                gameList.add(game)
+                            Log.d(TAG, "onViewCreated: $game")
+                        }
                     }
                 }
             }
@@ -97,6 +102,7 @@ class DashboardFragment
         userReference.document(auth.currentUser!!.uid).addSnapshotListener { value, _ ->
             won.text = value?.get("won").toString()
             lost.text = value?.get("lost").toString()
+            draw.text = value?.get("draw").toString()
         }
 
         // Show a dialog when the user clicks the "new game" button
@@ -125,6 +131,9 @@ class DashboardFragment
                     Log.i("FIREBASE", "Value set")
                 } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                     gameType = getString(R.string.one_player)
+                    val action: NavDirections =
+                        DashboardFragmentDirections.actionGame(gameType, "")
+                    mNavController.navigate(action)
                 }
                 Log.d(TAG, "New Game: $gameType")
             }
