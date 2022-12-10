@@ -65,10 +65,15 @@ class GameFragment : Fragment() {
                         .setPositiveButton(R.string.yes) { _, _ ->
                             endGame(-1)
                             mNavController!!.popBackStack()
-                            gameReference.document(game.gameId)
-                                .update("forfeited", FirebaseAuth.getInstance().currentUser!!.uid)
-                            gameReference.document(game.gameId)
-                                .update("open", false)
+                            if (!isSinglePlayer) {
+                                gameReference.document(game.gameId)
+                                    .update(
+                                        "forfeited",
+                                        FirebaseAuth.getInstance().currentUser!!.uid
+                                    )
+                                gameReference.document(game.gameId)
+                                    .update("open", false)
+                            }
                         }
                         .setNegativeButton(
                             R.string.cancel
@@ -287,7 +292,7 @@ class GameFragment : Fragment() {
             mButtons[i]!!.isClickable = false
         }
         gameEnded = true
-        gameReference.document(game.gameId).update("open", !gameEnded)
+        if (!isSinglePlayer) gameReference.document(game.gameId).update("open", !gameEnded)
     }
 
     private fun waitForOtherPlayer() {
