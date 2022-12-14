@@ -153,7 +153,6 @@ class DashboardFragment
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_logout, menu)
-        // this action menu is handled in MainActivity
     }
 
     companion object {
@@ -167,6 +166,20 @@ class DashboardFragment
             Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
                 .navigate(R.id.action_need_auth)
             return true
+        }
+        if (item.itemId == R.id.menu_deregister) {
+            auth.currentUser!!.delete().addOnCompleteListener {
+                Toast.makeText(requireContext(), "Deleted account", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .navigate(R.id.action_need_auth)
+            }
+
+//            userReference.document(auth.currentUser!!.uid).delete().addOnSuccessListener {
+//                auth.currentUser!!.delete().addOnCompleteListener {
+//                    Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+//                        .navigate(R.id.action_need_auth)
+//                }
+//            }
         }
         return super.onOptionsItemSelected(item)
     }

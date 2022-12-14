@@ -252,6 +252,7 @@ class GameFragment : Fragment() {
                                 .update("won", won)
                         }
                 }
+                Toast.makeText(context, "YOU WIN!!!!", Toast.LENGTH_SHORT).show()
             }
             -1 -> {
                 display.setText(R.string.you_lose)
@@ -267,6 +268,7 @@ class GameFragment : Fragment() {
                         }
 
                 }
+                Toast.makeText(context, "You Lose.... :(", Toast.LENGTH_SHORT).show()
             }
             0 -> {
                 display.setText(R.string.draw)
@@ -282,6 +284,7 @@ class GameFragment : Fragment() {
                         }
 
                 }
+                Toast.makeText(context, "Match Draw.", Toast.LENGTH_SHORT).show()
             }
             else -> {
                 display.setText(R.string.error)

@@ -35,7 +35,7 @@ class LoginFragment : Fragment() {
         userReference = FirebaseFirestore.getInstance().collection("users")
         //if a user is logged in, go to Dashboard
         if (auth.currentUser != null) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_login_successful);
+            Navigation.findNavController(requireView()).navigate(R.id.action_login_successful)
         }
     }
 
